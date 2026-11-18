@@ -15,7 +15,7 @@ export const config = {
   slogan: "Transforme qualquer parede em um cenário de luz.",
   legalName: "[TITIO NOEL LTDA]",
   cnpj: "[CNPJ]",
-  supportEmail: "[EMAIL DE SUPORTE]",
+  supportEmail: "contato@titionoeloficial.com.br",
   supportWhatsapp: "", // só números com DDI+DDD, ex.: "5511999999999" (vazio = esconde o botão)
   orderPrefix: "NAT", // prefixo do número do pedido (NAT-XXXXXX)
 
