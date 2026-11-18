@@ -243,9 +243,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .step h3 { margin-top: 1rem; font-size: 1.2rem; }
 .step p { margin-top: 0.5rem; color: var(--muted); font-size: 0.92rem; }
 
-.rgrid { display: grid; gap: 1.5rem; }
+.rgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
 .rcard { overflow: hidden; }
-.rcard img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.rcard__media { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--bg-2); border: 0; border-radius: 0; }
+.rcard video.rcard__media { aspect-ratio: 9/16; }
 .rcard__body { padding: 1.25rem; }
 .rcard__body h3 { margin-top: 0.5rem; font: 700 1rem var(--font-sans); }
 .rcard__body p { margin-top: 0.5rem; color: var(--muted); font-size: 0.92rem; }
@@ -390,7 +391,6 @@ body.is-co { background: var(--cream); color: var(--brown); }
   .sec-title h2 { font-size: 2.4rem; }
   .strip { grid-template-columns: repeat(4, 1fr); }
   .cards3 { grid-template-columns: repeat(3, 1fr); }
-  .rgrid { grid-template-columns: repeat(2, 1fr); }
   .footer__grid { grid-template-columns: 1.4fr 1fr 1fr 1.2fr; }
   .emotional h2 { font-size: 2.8rem; }
   .stats__grid { grid-template-columns: repeat(4, 1fr); }
@@ -403,7 +403,7 @@ body.is-co { background: var(--cream); color: var(--brown); }
   .product__grid { grid-template-columns: 1fr 1fr; gap: 3rem; }
   .gallery { position: sticky; top: 4.5rem; align-self: start; }
   .product h1 { font-size: 2.6rem; }
-  .rgrid { grid-template-columns: repeat(3, 1fr); }
+  .rgrid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
   .co { grid-template-columns: 1.4fr 1fr; gap: 1.5rem; align-items: start; padding-top: 1.5rem; }
   .co__aside { order: 0; position: sticky; top: 1rem; }
   .co__card { padding: 2rem; }
@@ -456,3 +456,8 @@ em { font-style: normal; }
   .product h1 { font-size: 1.7rem; }
 }
 .why img { object-position: center 20%; }
+
+.rcard__body { padding: 0.9rem; }
+.rcard__body p { font-size: 0.85rem; }
+.rcard--ph .rcard__body p:not(.rcard__name) { opacity: 0.6; }
+.ph.rcard__media { display: flex; width: auto; margin: 0.6rem 0.6rem 0; aspect-ratio: 1; background: var(--bg-2); border: 2px dashed rgba(255, 200, 87, 0.6); border-radius: 12px; }

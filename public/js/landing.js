@@ -194,19 +194,32 @@ function renderVideoCarousel(list) {
   draw();
 }
 
+/* Fileira de avaliações: mínimo de 4 cartões (foto OU vídeo + texto + nome).
+   Avaliações reais vêm de /data/reviews.json; os cartões que faltarem aparecem como espaço reservado. */
+const MIN_REVIEWS = 4;
+function reviewCard(r) {
+  const media = r.video
+    ? `<video class="rcard__media" src="${esc(r.video)}" ${r.poster ? `poster="${esc(r.poster)}"` : ""} controls playsinline preload="none" aria-label="Vídeo de ${esc(r.name)}"></video>`
+    : r.photo
+      ? `<img class="rcard__media" src="${esc(r.photo)}" alt="Foto enviada por ${esc(r.name)}" loading="lazy" decoding="async">`
+      : "";
+  return `<article class="card rcard">${media}
+    <div class="rcard__body">${stars(r.rating)}${r.title ? `<h3>${esc(r.title)}</h3>` : ""}<p>${esc(r.text)}</p>
+      <p class="rcard__name">${esc(r.name)}${r.city ? ` · <span style="font-weight:400">${esc(r.city)}</span>` : ""}</p>
+      <span class="badge-verified">${icon("badge-check")} Compra verificada</span></div>
+  </article>`;
+}
+const reviewPlaceholder = () => `<article class="card rcard rcard--ph">
+    ${placeholder("FOTO OU VÍDEO DO CLIENTE", "rcard__media")}
+    <div class="rcard__body">${stars(5)}<p>[Depoimento real do cliente aqui]</p>
+      <p class="rcard__name">[Nome do cliente] · <span style="font-weight:400">[Cidade]</span></p></div>
+  </article>`;
+
 function renderReviewGrid(list) {
   const box = $("#review-grid");
-  if (!list.length) return ($("#sec-reviews").hidden = true); // sem avaliações reais: a seção some
-  box.innerHTML = `<div class="rgrid">${list
-    .map(
-      (r) => `<article class="card rcard">
-        ${r.photo ? `<img src="${esc(r.photo)}" alt="Foto enviada por ${esc(r.name)}" loading="lazy" decoding="async">` : ""}
-        <div class="rcard__body">${stars(r.rating)}${r.title ? `<h3>${esc(r.title)}</h3>` : ""}<p>${esc(r.text)}</p>
-          <p class="rcard__name">${esc(r.name)} · <span style="font-weight:400">${esc(r.city)}</span></p>
-          <span class="badge-verified">${icon("badge-check")} Compra verificada</span></div>
-      </article>`
-    )
-    .join("")}</div>`;
+  const cards = list.slice(0, 8).map(reviewCard);
+  while (cards.length < MIN_REVIEWS) cards.push(reviewPlaceholder());
+  box.innerHTML = `<div class="rgrid">${cards.join("")}</div>`;
 }
 
 loadReviews().then((list) => {
