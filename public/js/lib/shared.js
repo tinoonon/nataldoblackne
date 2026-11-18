@@ -21,10 +21,10 @@ export function activeShippingOptions(config) {
 export function calcTotals(config, items, shippingId) {
   if (!Array.isArray(items) || items.length === 0) throw new Error("Carrinho vazio.");
   const lines = items.map((it) => {
-    const size = config.product.sizes.find((s) => s.id === it.size);
+    const size = config.product.variants.find((s) => s.id === it.size);
     const qty = Number(it.qty);
     if (!size) throw new Error("Produto inválido.");
-    if (!(size.price > 0)) throw new Error(`O tamanho ${size.label} ainda não está disponível.`);
+    if (!(size.price > 0)) throw new Error(`A opção ${size.label} ainda não está disponível.`);
     if (!Number.isInteger(qty) || qty < 1 || qty > config.maxQty) throw new Error("Quantidade inválida.");
     return {
       size: size.id,

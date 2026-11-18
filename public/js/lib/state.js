@@ -22,10 +22,10 @@ function write(key, value) {
   }
 }
 
-/* ---------- Carrinho: [{ size, qty }] ---------- */
+/* ---------- Carrinho: [{ size: <id da variação>, qty }] ---------- */
 export function getCart() {
   const cart = read(KEYS.cart, []);
-  return Array.isArray(cart) ? cart.filter((i) => config.product.sizes.some((s) => s.id === i.size && s.price > 0)) : [];
+  return Array.isArray(cart) ? cart.filter((i) => config.product.variants.some((s) => s.id === i.size && s.price > 0)) : [];
 }
 export const setCart = (cart) => write(KEYS.cart, cart);
 
@@ -37,7 +37,7 @@ export function addToCart(size, qty) {
   setCart(cart);
 }
 
-/** Define o carrinho com UM item (botão "Comprar" da página: tamanho + quantidade escolhidos). */
+/** Define o carrinho com UM item (botão "Comprar" da página: variação + quantidade escolhidas). */
 export const setSingleItem = (size, qty) => setCart([{ size, qty }]);
 
 export function cartCount() {

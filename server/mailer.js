@@ -27,10 +27,10 @@ export function confirmationEmail({ config, order, view, brl }) {
   const a = view.address;
   return {
     subject: `Pedido ${view.number} confirmado — ${config.brand}`,
-    html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#3b2217">
-      <h1 style="color:#c8102e;font-size:22px">Pedido confirmado! 🎄</h1>
+    html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#1b2140">
+      <h1 style="color:#4f3bd9;font-size:22px">Pedido confirmado! ✨</h1>
       <p>Olá, <b>${esc(view.customerFirstName)}</b>! Recebemos o seu pagamento via Pix.</p>
-      <p style="background:#fff6e5;padding:10px 14px;border-radius:8px"><b>Pedido ${esc(view.number)}</b></p>
+      <p style="background:#f3f0ff;padding:10px 14px;border-radius:8px"><b>Pedido ${esc(view.number)}</b></p>
       <table width="100%" style="border-collapse:collapse;font-size:15px">${rows}
         <tr><td style="padding-top:8px;border-top:1px solid #eadfce"><b>Total do pedido</b></td><td align="right" style="border-top:1px solid #eadfce"><b>${brl(view.totalCents)}</b></td></tr>
         ${view.pix ? `<tr><td>Pago via Pix</td><td align="right">${brl(view.pix.amountCents)}</td></tr>` : ""}

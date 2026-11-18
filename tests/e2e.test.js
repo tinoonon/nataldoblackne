@@ -26,7 +26,7 @@ const gwState = () => fetch(`${gw}/__state`).then((r) => r.json());
 
 const customer = { name: "Maria da Silva", email: "maria@example.com", cpf: "529.982.247-25", phone: "(11) 91234-5678" };
 const address = { cep: "01310-100", street: "Av. Paulista", number: "1000", complement: "Apto 5", district: "Bela Vista", city: "São Paulo", state: "SP" };
-const items = [{ size: "180", qty: 2 }];
+const items = [{ size: "33f", qty: 2 }];
 const state = { items, customer, address, shippingId: "padrao" };
 
 try {
@@ -39,13 +39,13 @@ try {
   ok((await fetch(base + "/..%2f.env")).status === 404, "path traversal bloqueado");
 
   // Validação
-  let r = await call("POST", "/api/orders", { items: [{ size: "180", qty: 1 }], customer: { ...customer, cpf: "111.111.111-11" } });
+  let r = await call("POST", "/api/orders", { items: [{ size: "33f", qty: 1 }], customer: { ...customer, cpf: "111.111.111-11" } });
   ok(r.status === 422 && r.data.fields.cpf, "CPF inválido é recusado no servidor");
-  r = await call("POST", "/api/orders", { items: [{ size: "210", qty: 1 }], customer });
-  ok(r.status === 400, "tamanho sem preço (2,10 m) não pode ser comprado");
-  r = await call("POST", "/api/orders", { items: [{ size: "180", qty: 999 }], customer });
+  r = await call("POST", "/api/orders", { items: [{ size: "99x", qty: 1 }], customer });
+  ok(r.status === 400, "variação inexistente/sem preço não pode ser comprada");
+  r = await call("POST", "/api/orders", { items: [{ size: "33f", qty: 999 }], customer });
   ok(r.status === 400, "quantidade absurda é recusada");
-  r = await call("POST", "/api/orders", { items: [{ size: "180", qty: 1, price: 0.01 }], customer });
+  r = await call("POST", "/api/orders", { items: [{ size: "33f", qty: 1, price: 0.01 }], customer });
   ok(r.status === 200, "campo 'price' enviado pelo cliente é ignorado");
 
   // Fluxo feliz
@@ -69,10 +69,10 @@ try {
   ok(r.data.status === "checkout", "antes de gerar o Pix o status é 'checkout'");
 
   r = await call("POST", `/api/orders/${id}/pix`, state);
-  ok(r.status === 200 && r.data.code.startsWith("00020126") && r.data.amountCents === 1990, "Pix gerado com valor de R$ 19,90 (config, não do cliente)");
+  ok(r.status === 200 && r.data.code.startsWith("00020126") && r.data.amountCents === 5980, "Pix gerado com o valor do config (2 × R$ 29,90), não do cliente");
   ok(!r.data.qrBase64.startsWith("data:"), "QR Code devolvido ao front sem o prefixo data: (o front adiciona)");
   const pay1 = (await gwState()).payments[0];
-  ok(pay1._request.amount === 19.9 && pay1._request.expiration > 0, "gateway recebeu valor (em reais) e expiração em segundos");
+  ok(pay1._request.amount === 59.8 && pay1._request.expiration > 0, "gateway recebeu valor (em reais) e expiração em segundos");
   ok(pay1._request.external_id === `${id}_1` && pay1._request.webhook_url === undefined, "external_id = <pedido>_<tentativa>; sem webhook");
   ok(pay1._request.description.startsWith("NAT-") && pay1._request.description.includes("Maria da Silva") && pay1._request.description.includes("11912345678") && pay1._request.description.length <= 140, "descrição do Pix traz pedido, nome e telefone (≤ 140)");
   const r2 = await call("POST", `/api/orders/${id}/pix`, state);
@@ -84,16 +84,16 @@ try {
   ok(r.data.status === "awaiting_payment" && r.data.pix.code === r2.data.code && !JSON.stringify(r.data).includes("529"), "tela do Pix lê da Profanus e não expõe CPF");
 
   // Aprovação
-  await fetch(`${gw}/__approve?id=${pay1.id}&amount=19.9`);
+  await fetch(`${gw}/__approve?id=${pay1.id}&amount=59.8`);
   r = await call("GET", `/api/orders/${id}/status`);
-  ok(r.data.status === "paid" && r.data.amountCents === 1990, "após aprovação na Profanus o pedido vira PAGO");
+  ok(r.data.status === "paid" && r.data.amountCents === 5980, "após aprovação na Profanus o pedido vira PAGO");
   r = await call("POST", `/api/orders/${id}/pix`, state);
   ok(r.status === 409, "pedido pago não gera novo Pix");
 
   // Expirado → novo Pix (tentativa 2)
-  r = await call("POST", "/api/orders", { items: [{ size: "180", qty: 1 }], customer });
+  r = await call("POST", "/api/orders", { items: [{ size: "33f", qty: 1 }], customer });
   const id2 = r.data.orderId;
-  const state2 = { ...state, items: [{ size: "180", qty: 1 }] };
+  const state2 = { ...state, items: [{ size: "33f", qty: 1 }] };
   await call("POST", `/api/orders/${id2}/pix`, state2);
   const pay2 = (await gwState()).payments[1];
   await fetch(`${gw}/__approve?id=${pay2.id}&status=expired`);

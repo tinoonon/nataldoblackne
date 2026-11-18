@@ -15,7 +15,7 @@ const logoHtml = (light = false) => {
 };
 
 function topBar() {
-  return `<div class="topbar" role="note">🎄 ${esc(config.topBar)}</div>`;
+  return `<div class="topbar" role="note">✨ ${esc(config.topBar)}</div>`;
 }
 
 function siteHeader() {

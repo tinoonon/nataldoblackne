@@ -17,8 +17,8 @@ export function renderSummary(el, { items = getCart(), shippingId = getCheckout(
   const lines = t.lines
     .map(
       (l) => `<li class="sum__line">
-        <div class="sum__thumb">${config.product.gallery[0] ? `<img src="${esc(config.product.gallery[0])}" alt="" width="56" height="56">` : "🎄"}<span class="sum__qty">${l.qty}</span></div>
-        <div class="sum__info"><p class="sum__name">${esc(config.product.name)}</p><p class="sum__muted">${esc(l.label)} de altura</p></div>
+        <div class="sum__thumb">${config.product.gallery[0] ? `<img src="${esc(config.product.gallery[0])}" alt="" width="56" height="56">` : "💡"}<span class="sum__qty">${l.qty}</span></div>
+        <div class="sum__info"><p class="sum__name">${esc(config.product.name)}</p><p class="sum__muted">${esc(l.label)}</p></div>
         <p class="sum__price">${brl(l.totalCents)}</p>
       </li>`
     )

@@ -1,4 +1,4 @@
-# Loja Árvore de Natal — landing + carrinho + checkout Pix (Profanus Pay)
+# Loja Cortina de Luz LED — landing + carrinho + checkout Pix (Profanus Pay)
 
 HTML/CSS/JS puro + API Node (sem dependências, sem banco, sem webhook). Roda local e na Vercel.
 
@@ -15,8 +15,10 @@ npm test                  # teste de ponta a ponta com gateway SIMULADO
 3. Redeploy. Confira `https://SEU-DOMINIO/api/health` → `{"ok":true,"pix":true}`.
 
 ## O que editar
-- `public/js/config.js` — textos, preços, frete, prazos, Pix (modo/valor), números, IDs Meta/GA, imagens.
-- `public/img/` — imagens/logo.
+- `public/js/config.js` — título, preços das 6 variações (tamanho x cor), frete, prazos, Pix (modo/valor), números, IDs Meta/GA, imagens.
+  - **Confira os preços** em `product.variants` (os valores atuais são de exemplo).
+- `public/img/` — fotos do produto (`cortina-1..5.jpg`) e logo.
+- `public/data/reviews.json` — avaliações reais; enquanto estiver vazio, as seções de avaliações/vídeos ficam ocultas.
 
 ## Fluxo
 `/` → `/carrinho` → `/checkout/dados` → `/checkout/entrega` (CEP + frete) → `/checkout/pagamento` → `/checkout/pix` (QR + copia e cola, contador, verificação automática) → `/confirmacao`

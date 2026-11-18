@@ -1,4 +1,4 @@
-/** Lógica da landing page: galeria, seletor de tamanho/quantidade, avaliações, FAQ. */
+/** Lógica da landing page: galeria, seletor de tamanho + cor, quantidade, avaliações, FAQ. */
 import { config } from "./config.js";
 import "./lib/layout.js";
 import { $, $$, esc, icon, placeholder } from "./lib/dom.js";
@@ -6,7 +6,7 @@ import { brl, toCents } from "./lib/shared.js";
 import { setSingleItem } from "./lib/state.js";
 import { track } from "./lib/tracking.js";
 
-const sizes = config.product.sizes;
+const { variants, sizeOptions, colorOptions } = config.product;
 const money = (v) => brl(toCents(v));
 
 /* ---------------- Slots de imagem (config.images) ---------------- */
@@ -35,7 +35,7 @@ let current = 0;
 function renderGallery() {
   const g = config.product.gallery;
   const main = g[current]
-    ? `<img src="${esc(g[current])}" alt="Árvore de Natal pré-iluminada com LEDs dourados — foto ${current + 1}" width="1024" height="1024" ${current === 0 ? 'fetchpriority="high"' : ""}>`
+    ? `<img src="${esc(g[current])}" alt="${esc(config.product.name)} — foto ${current + 1}" width="800" height="800" ${current === 0 ? 'fetchpriority="high"' : ""}>`
     : placeholder(current === 0 ? "FOTO PRINCIPAL DO PRODUTO" : `FOTO ${current + 1} DO PRODUTO`);
   gallery.innerHTML = `<div class="gallery__main">${main}<span class="gallery__badge">${esc(config.product.discountBadge)}</span></div>
     <div class="gallery__thumbs">${g
@@ -57,26 +57,35 @@ renderGallery();
 
 /* ---------------- Caixa de compra ---------------- */
 const buybox = $("#buybox");
-let sizeId = sizes[0].id;
+const first = variants.find((v) => v.price > 0) || variants[0];
+let size = first.size;
+let color = first.color;
 let qty = 1;
+const findVariant = () => variants.find((v) => v.size === size && v.color === color);
 
 function renderBuybox() {
-  const s = sizes.find((x) => x.id === sizeId);
-  const available = s.price > 0;
+  const s = findVariant();
+  const available = !!s && s.price > 0;
   const off = available && s.oldPrice ? Math.round((1 - s.price / s.oldPrice) * 100) : 0;
   const inst = config.product.installments;
+  const sizeLabel = sizeOptions.find((o) => o.id === size)?.label;
+  const colorLabel = colorOptions.find((o) => o.id === color)?.label;
 
   const priceHtml = available
     ? `${s.oldPrice ? `<p class="buybox__old">${money(s.oldPrice)}</p>` : ""}
        <div class="buybox__price-row"><p class="buybox__price">${money(s.price)}</p>${off > 0 ? `<span class="buybox__off">-${off}%</span>` : ""}</div>
        <p class="buybox__inst">em até <b>${inst}x de ${brl(Math.round(toCents(s.price) / inst))}</b> sem juros</p>`
-    : `<p class="buybox__price" style="font-size:1.3rem;color:var(--brown)">[PREÇO DO ${esc(s.label)}]</p>
-       <p class="buybox__warn">Preencha o preço deste tamanho em public/js/config.js</p>`;
+    : `<p class="buybox__price" style="font-size:1.3rem;color:var(--muted)">Combinação indisponível</p>
+       <p class="buybox__warn">Escolha outra combinação de tamanho e cor.</p>`;
 
   buybox.innerHTML = `${priceHtml}
-    <p class="buybox__label">Altura: ${esc(s.label)}</p>
-    <div class="sizes" role="radiogroup" aria-label="Escolha a altura">
-      ${sizes.map((x) => `<button type="button" class="size" role="radio" aria-checked="${x.id === sizeId}" data-size="${x.id}">${x.bestSeller ? '<span class="size__flag">MAIS VENDIDO</span>' : ""}${esc(x.label)} de altura</button>`).join("")}
+    <p class="buybox__label">Tamanho: <span class="buybox__pick">${esc(sizeLabel)}</span></p>
+    <div class="sizes" role="radiogroup" aria-label="Escolha o tamanho">
+      ${sizeOptions.map((x) => `<button type="button" class="size" role="radio" aria-checked="${x.id === size}" data-size="${esc(x.id)}">${x.bestSeller ? '<span class="size__flag">MAIS VENDIDO</span>' : ""}${esc(x.label)}</button>`).join("")}
+    </div>
+    <p class="buybox__label">Cor da luz: <span class="buybox__pick">${esc(colorLabel)}</span></p>
+    <div class="colors" role="radiogroup" aria-label="Escolha a cor da luz">
+      ${colorOptions.map((x) => `<button type="button" class="color" role="radio" aria-checked="${x.id === color}" data-color="${esc(x.id)}"><span class="color__dot" style="background:${esc(x.swatch)}" aria-hidden="true"></span>${esc(x.label)}</button>`).join("")}
     </div>
     <div class="qty-row"><span id="qty-l">Quantidade</span>
       <div class="qty" role="group" aria-labelledby="qty-l">
@@ -86,42 +95,50 @@ function renderBuybox() {
       </div>
     </div>
     <ul class="checks">
-      <li>${icon("check")} Mais de 900 LEDs de luz quente já presos nos galhos</li>
-      <li>${icon("check")} Galhos densos que você modela como quiser</li>
-      <li>${icon("check")} Bivolt 110V/220V e montagem sem ferramentas</li>
+      <li>${icon("check")} Alimentação USB 5V + controle remoto incluso</li>
+      <li>${icon("check")} 8 modos de iluminação e fio flexível</li>
+      <li>${icon("check")} Liga em carregador USB ou power bank compatível</li>
     </ul>
+    <p class="buybox__note">${icon("alert")} Fonte USB (carregador) e power bank não estão inclusos.</p>
     <button type="button" class="btn btn--buy btn--block" id="buy" ${available ? "" : "disabled"}>${icon("lock")} COMPRAR COM DESCONTO</button>
-    <div class="minis"><span>${icon("truck")}Frete Grátis</span><span>${icon("lock")}Compra 100% Segura</span><span>${icon("shield-check")}2 Anos de Garantia</span></div>`;
+    <div class="minis"><span>${icon("truck")}Frete Grátis</span><span>${icon("lock")}Compra 100% Segura</span><span>${icon("shield-check")}Garantia legal</span></div>`;
 }
 
 buybox.addEventListener("click", (e) => {
   const sz = e.target.closest("[data-size]");
+  const co = e.target.closest("[data-color]");
   const q = e.target.closest("[data-q]");
   if (sz) {
-    sizeId = sz.dataset.size;
+    size = sz.dataset.size;
     renderBuybox();
-    $(`[data-size="${sizeId}"]`, buybox).focus();
+    $(`[data-size="${size}"]`, buybox).focus();
+  } else if (co) {
+    color = co.dataset.color;
+    const ph = colorOptions.find((o) => o.id === color)?.photo;
+    if (Number.isInteger(ph) && config.product.gallery[ph]) { current = ph; renderGallery(); }
+    renderBuybox();
+    $(`[data-color="${color}"]`, buybox).focus();
   } else if (q) {
     qty = Math.min(config.maxQty, Math.max(1, qty + Number(q.dataset.q)));
     renderBuybox();
     $(`[data-q="${q.dataset.q}"]:not(:disabled)`, buybox)?.focus();
   } else if (e.target.closest("#buy")) {
-    setSingleItem(sizeId, qty);
-    const s = sizes.find((x) => x.id === sizeId);
-    track("AddToCart", { value: s.price * qty, content_name: `${config.product.name} ${s.label}` });
+    const v = findVariant();
+    if (!v || !(v.price > 0)) return;
+    setSingleItem(v.id, qty);
+    track("AddToCart", { value: v.price * qty, content_name: `${config.product.name} ${v.label}` });
     location.href = config.skipCart ? "/checkout/dados" : "/carrinho";
   }
 });
 renderBuybox();
 {
-  const s0 = sizes.find((s) => s.price > 0);
+  const s0 = variants.find((s) => s.price > 0);
   if (s0) track("ViewContent", { value: s0.price, content_name: config.product.name });
 }
 
 /* CTA final: leva ao carrinho/checkout com o 1º tamanho disponível */
-$("#final-brand").textContent = config.brand.toUpperCase();
 $("#final-cta").addEventListener("click", (e) => {
-  const s = sizes.find((x) => x.price > 0);
+  const s = findVariant()?.price > 0 ? findVariant() : variants.find((x) => x.price > 0);
   if (!s) return e.preventDefault();
   setSingleItem(s.id, 1);
   if (config.skipCart) {
@@ -142,7 +159,6 @@ $("#final-cta").addEventListener("click", (e) => {
 
 /* ---------------- Avaliações REAIS (public/data/reviews.json) ---------------- */
 const stars = (n = 5) => `<span class="stars" aria-label="${n} de 5 estrelas">${Array.from({ length: 5 }, (_, i) => icon("star", i < n ? "" : "off")).join("")}</span>`;
-const emptyReviews = () => placeholder("AVALIAÇÕES REAIS: adicione em public/data/reviews.json", "");
 
 async function loadReviews() {
   try {
@@ -157,7 +173,7 @@ async function loadReviews() {
 function renderVideoCarousel(list) {
   const box = $("#video-carousel");
   const vids = list.filter((r) => r.video);
-  if (!vids.length) return (box.innerHTML = `<div style="max-width:520px;margin:0 auto">${emptyReviews()}</div>`);
+  if (!vids.length) return ($("#sec-videos").hidden = true); // sem vídeos reais: a seção some
   let i = 0;
   const draw = () => {
     const r = vids[i];
@@ -180,7 +196,7 @@ function renderVideoCarousel(list) {
 
 function renderReviewGrid(list) {
   const box = $("#review-grid");
-  if (!list.length) return (box.innerHTML = `<div style="max-width:520px;margin:0 auto">${emptyReviews()}</div>`);
+  if (!list.length) return ($("#sec-reviews").hidden = true); // sem avaliações reais: a seção some
   box.innerHTML = `<div class="rgrid">${list
     .map(
       (r) => `<article class="card rcard">
@@ -200,12 +216,14 @@ loadReviews().then((list) => {
 
 /* ---------------- FAQ ---------------- */
 const faq = [
-  ["As luzes já vêm instaladas?", "Sim! São mais de 900 LEDs dourados já embutidos nos galhos. É só montar e ligar."],
-  ["Qual o tamanho ideal para minha casa?", "Para pé-direito padrão (2,50 m), as duas alturas funcionam. A de 2,10 m é a mais vendida para salas amplas; a de 1,80 m é ótima para apartamentos."],
+  ["Como a cortina é alimentada?", "Por conexão USB 5V. Você pode ligar em um carregador USB ou em um power bank compatível. Atenção: a fonte USB e o power bank não estão inclusos."],
+  ["O que vem na embalagem?", "1 cortina de luz LED no tamanho e na cor que você escolheu e 1 controle remoto."],
+  ["Quais tamanhos e cores existem?", "Dois tamanhos (3 m x 3 m e 4 m x 3 m) e três cores de luz: branco frio, branco quente e colorida. Escolha a combinação antes de finalizar a compra."],
+  ["Quantos modos de iluminação tem?", "São 8 modos, que você troca pelo controle remoto."],
+  ["Onde posso usar?", "No quarto, sala, janela, festas, casamentos e na decoração de Natal. Evite instalar perto de fontes de calor ou em locais sujeitos a imersão em água."],
   ["Como funciona a entrega e qual o prazo?", `Frete grátis para todo o Brasil com código de rastreio. Pedidos até ${config.christmasDeadline} chegam antes do Natal.`],
   ["Posso parcelar?", `Sim, em até ${config.product.installments}x sem juros no cartão.`],
   ["E se eu não gostar?", "Você tem 7 dias após o recebimento para devolver, conforme o Código de Defesa do Consumidor."],
-  ["Qual a durabilidade?", "Materiais resistentes para usar por muitos Natais, com 2 anos de garantia contra defeitos de fabricação."],
 ];
 $("#faq-list").innerHTML = faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("");
 

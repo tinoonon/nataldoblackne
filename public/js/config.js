@@ -12,37 +12,56 @@
 export const config = {
   // ---------- Marca / empresa ----------
   brand: "[NOME DA MARCA]",
-  slogan: "A magia do Natal, acesa em cada galho.",
+  slogan: "Transforme qualquer parede em um cenário de luz.",
   legalName: "[RAZÃO SOCIAL]",
   cnpj: "[CNPJ]",
   supportEmail: "[EMAIL DE SUPORTE]",
   supportWhatsapp: "", // só números com DDI+DDD, ex.: "5511999999999" (vazio = esconde o botão)
-  orderPrefix: "NAT", // prefixo do número do pedido (NAT-1001)
+  orderPrefix: "NAT", // prefixo do número do pedido (NAT-XXXXXX)
 
-  topBar: "BLACK FRIDAY: FRETE GRÁTIS PARA TODO BRASIL",
+  topBar: "BLACK FRIDAY: FRETE GRÁTIS PARA TODO O BRASIL",
 
   // ---------- Imagens (caminhos dentro de /public). null = mostra placeholder ----------
   images: {
     logo: null, // ex.: "/img/logo.png"
     logoLight: null, // logo para fundo escuro (rodapé); se null usa o texto da marca
-    why1: null, // card "LEDs dourados embutidos"
-    why2: null, // card "Folhagem cheia e realista"
-    why3: null, // card "Montagem em 5 minutos"
-    before: null, // foto ANTES
-    after: null, // foto DEPOIS
+    why1: "/img/cortina-4.jpg", // card "Branco frio"
+    why2: "/img/cortina-3.jpg", // card "Branco quente"
+    why3: "/img/cortina-2.jpg", // card "Multicolorido"
   },
 
   // ---------- Produto ----------
   product: {
-    name: "Árvore de Natal Pré-iluminada +900 LEDs",
+    // Título completo (aparece no H1 da página).
+    title: "Cortina de Luz LED 300 LEDs 3x3m ou 4x3m USB com Controle Remoto, 8 Modos, Branco Frio, Quente ou Colorida",
+    // Nome curto (carrinho, checkout, e-mails, Pix).
+    name: "Cortina de Luz LED USB com Controle Remoto",
     installments: 12,
-    discountBadge: "Black Friday 60% OFF",
+    discountBadge: "Oferta Black Friday",
     // Galeria: 5 posições. null = placeholder "[FOTO n]". A 1ª aparece como principal.
-    gallery: ["/img/arvore-hero.jpg", null, null, null, null],
-    sizes: [
-      { id: "180", label: "1,80 m", price: 129.9, oldPrice: 324.78, bestSeller: false },
-      // [PREÇO] do 2,10 m: preencha price e oldPrice. Enquanto for 0, o botão de compra fica bloqueado.
-      { id: "210", label: "2,10 m", price: 0, oldPrice: 0, bestSeller: true },
+    gallery: ["/img/cortina-1.jpg", "/img/cortina-2.jpg", "/img/cortina-3.jpg", "/img/cortina-4.jpg", "/img/cortina-5.jpg"],
+
+    // Opções que o cliente escolhe na página (tamanho x cor). `photo` = índice da galeria que abre ao escolher a cor.
+    sizeOptions: [
+      { id: "3x3", label: "3 m x 3 m" },
+      { id: "4x3", label: "4 m x 3 m", bestSeller: true },
+    ],
+    colorOptions: [
+      { id: "frio", label: "Branco frio", swatch: "#e8f1ff", photo: 3 },
+      { id: "quente", label: "Branco quente", swatch: "#ffc76b", photo: 2 },
+      { id: "color", label: "Colorida", swatch: "linear-gradient(135deg,#ff4d6d,#ffd166,#06d6a0,#4dabf7,#b197fc)", photo: 1 },
+    ],
+
+    // Variações vendáveis (tamanho x cor). O `id` é o que vai para carrinho/pedido.
+    // >>> CONFIRA OS PREÇOS ABAIXO <<< — são valores de exemplo; troque pelos seus.
+    // Se price for 0, o botão de compra daquela variação fica bloqueado.
+    variants: [
+      { id: "33f", size: "3x3", color: "frio", label: "3 m x 3 m · Branco frio", price: 29.9, oldPrice: 59.9 },
+      { id: "33q", size: "3x3", color: "quente", label: "3 m x 3 m · Branco quente", price: 29.9, oldPrice: 59.9 },
+      { id: "33c", size: "3x3", color: "color", label: "3 m x 3 m · Colorida", price: 29.9, oldPrice: 59.9 },
+      { id: "43f", size: "4x3", color: "frio", label: "4 m x 3 m · Branco frio", price: 39.9, oldPrice: 79.9 },
+      { id: "43q", size: "4x3", color: "quente", label: "4 m x 3 m · Branco quente", price: 39.9, oldPrice: 79.9 },
+      { id: "43c", size: "4x3", color: "color", label: "4 m x 3 m · Colorida", price: 39.9, oldPrice: 79.9 },
     ],
   },
   maxQty: 10,
@@ -73,14 +92,11 @@ export const config = {
   // ---------- Pix ----------
   pix: {
     expiresMinutes: 30,
-    // "total": cobra o valor total do pedido no Pix.
-    // "fixed": cobra apenas fixedAmount agora (ex.: taxa de frete/sinal) — explique abaixo.
-    chargeMode: "fixed",
-    fixedAmount: 19.9,
-    // Texto mostrado ao cliente na tela de pagamento (obrigatório quando chargeMode = "fixed").
-    // >>> SUBSTITUA descrevendo claramente o que é esse valor e o que acontece com o restante <<<
-    explanation: "[TEXTO EXPLICATIVO: descreva o que este valor representa (ex.: taxa de frete ou sinal) e o que acontece com o restante]",
-    chargeLabel: "Valor a pagar agora",
+    // "total": cobra o valor total do pedido no Pix (produto + frete).
+    chargeMode: "total",
+    fixedAmount: 0, // só usado se chargeMode = "fixed"
+    explanation: "", // só aparece se chargeMode = "fixed"
+    chargeLabel: "Total a pagar",
   },
 
   // ---------- Rastreamento (carrega só após aceitar cookies) ----------

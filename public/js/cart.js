@@ -1,4 +1,4 @@
-/** Página do carrinho: editar quantidade, remover, adicionar outro tamanho. */
+/** Página do carrinho: editar quantidade, remover, adicionar outra variação. */
 import { config } from "./config.js";
 import "./lib/layout.js";
 import { $, esc, icon } from "./lib/dom.js";
@@ -24,13 +24,13 @@ function render() {
 
   itemsEl.innerHTML = cart
     .map((it) => {
-      const s = config.product.sizes.find((x) => x.id === it.size);
+      const s = config.product.variants.find((x) => x.id === it.size);
       const img = config.product.gallery[0];
       return `<div class="cart-item" data-size="${esc(it.size)}">
-        ${img ? `<img class="cart-item__img" src="${esc(img)}" alt="" width="84" height="84">` : `<div class="cart-item__img" aria-hidden="true">🎄</div>`}
+        ${img ? `<img class="cart-item__img" src="${esc(img)}" alt="" width="84" height="84">` : `<div class="cart-item__img" aria-hidden="true">💡</div>`}
         <div>
           <p class="cart-item__name">${esc(config.product.name)}</p>
-          <p class="cart-item__size">${esc(s.label)} de altura</p>
+          <p class="cart-item__size">${esc(s.label)}</p>
           <div class="cart-item__row">
             <div class="qty" role="group" aria-label="Quantidade">
               <button type="button" data-q="-1" aria-label="Diminuir quantidade" ${it.qty <= 1 ? "disabled" : ""}>${icon("minus")}</button>
@@ -45,10 +45,10 @@ function render() {
     })
     .join("");
 
-  // Oferece o outro tamanho, se disponível e ainda fora do carrinho
-  const others = config.product.sizes.filter((s) => s.price > 0 && !cart.some((i) => i.size === s.id));
+  // Oferece as outras variações disponíveis (até 3 sugestões), ainda fora do carrinho
+  const others = config.product.variants.filter((s) => s.price > 0 && !cart.some((i) => i.size === s.id)).slice(0, 3);
   addEl.innerHTML = others
-    .map((s) => `<div class="cart-add"><span>Adicionar também a versão <b>${esc(s.label)}</b> — ${brl(toCents(s.price))}</span><button type="button" class="btn btn--ghost btn--sm" data-add="${esc(s.id)}">Adicionar</button></div>`)
+    .map((s) => `<div class="cart-add"><span>Adicionar também <b>${esc(s.label)}</b> — ${brl(toCents(s.price))}</span><button type="button" class="btn btn--ghost btn--sm" data-add="${esc(s.id)}">Adicionar</button></div>`)
     .join("");
 
   renderSummary($("#summary"), { items: cart, shippingId: null });
