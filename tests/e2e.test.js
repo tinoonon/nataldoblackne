@@ -69,7 +69,7 @@ try {
   ok(r.data.status === "checkout", "antes de gerar o Pix o status é 'checkout'");
 
   r = await call("POST", `/api/orders/${id}/pix`, state);
-  ok(r.status === 200 && r.data.code.startsWith("00020126") && r.data.amountCents === 5980, "Pix gerado com o valor do config (2 × R$ 29,90), não do cliente");
+  ok(r.status === 200 && r.data.code.startsWith("00020126") && r.data.amountCents === 5980, "Pix gerado com o valor do config (2 × R$ 14,90), não do cliente");
   ok(!r.data.qrBase64.startsWith("data:"), "QR Code devolvido ao front sem o prefixo data: (o front adiciona)");
   const pay1 = (await gwState()).payments[0];
   ok(pay1._request.amount === 59.8 && pay1._request.expiration > 0, "gateway recebeu valor (em reais) e expiração em segundos");
