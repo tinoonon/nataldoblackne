@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout - Entrega | Árvore de Natal</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#C8102E">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,700&display=swap">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-layout="checkout" class="is-co">
+<div data-progress="2"></div>
+<main class="co">
+  <section class="card co__card" aria-labelledby="h">
+    <h1 id="h">Endereço de entrega</h1>
+    <p class="co__lead">Digite o CEP e preenchemos o restante para você.</p>
+    <form id="form" novalidate>
+      <div class="field"><label for="cep">CEP</label><input id="cep" name="cep" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" maxlength="9" required><p class="cep-status" id="cep-status" aria-live="polite"></p></div>
+      <div class="field"><label for="street">Rua / Avenida</label><input id="street" name="street" autocomplete="address-line1" required></div>
+      <div class="row row--num">
+        <div class="field"><label for="number">Número</label><input id="number" name="number" inputmode="numeric" autocomplete="off" required></div>
+        <div class="field"><label for="complement">Complemento</label><input id="complement" name="complement" autocomplete="address-line2" placeholder="Apto, bloco (opcional)"></div>
+      </div>
+      <div class="field"><label for="district">Bairro</label><input id="district" name="district" autocomplete="address-level3" required></div>
+      <div class="row row--uf">
+        <div class="field"><label for="city">Cidade</label><input id="city" name="city" autocomplete="address-level2" required></div>
+        <div class="field"><label for="state">Estado</label><select id="state" name="state" autocomplete="address-level1" required><option value="">UF</option></select></div>
+      </div>
+
+      <h2 class="sec-h">Forma de envio</h2>
+      <div class="opts" id="shipping" role="radiogroup" aria-label="Forma de envio"></div>
+
+      <div class="co__actions"><button class="btn btn--buy btn--block" type="submit">Ir para o pagamento</button><a class="co__back" href="/checkout/dados">← Voltar</a></div>
+    </form>
+  </section>
+  <aside class="co__aside" aria-label="Resumo do pedido"><div id="summary"></div></aside>
+</main>
+<script type="module" src="/js/checkout-entrega.js"></script>
+</body>
+</html>

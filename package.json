@@ -1,0 +1,13 @@
+{
+  "name": "arvore-natal-loja",
+  "version": "2.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Loja de produto único: landing + carrinho + checkout Pix (Profanus Pay). Sem dependências, sem banco. Pronta para a Vercel.",
+  "engines": { "node": "22.x" },
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js",
+    "test": "node tests/e2e.test.js"
+  }
+}

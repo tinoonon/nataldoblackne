@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contato | Árvore de Natal</title>
+  <meta name="description" content="Fale com a nossa equipe de atendimento.">
+  <meta name="theme-color" content="#C8102E">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,700&display=swap">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body data-layout="site">
+<main class="page"><article class="page__in">
+<h1>Contato</h1>
+<p>Nossa equipe responde o mais rápido possível. Se já comprou, tenha em mãos o número do pedido.</p>
+<div class="card" id="channels">
+  <p><b>E-mail:</b> <a id="mail-link" href="#"><span data-cfg="supportEmail"></span></a></p>
+  <p id="wa-row" hidden><b>WhatsApp:</b> <a id="wa-link" href="#" target="_blank" rel="noopener">Falar agora</a></p>
+</div>
+
+<h2 id="rastreio">Rastreio do pedido</h2>
+<p>Assim que o pedido for enviado, você recebe o código de rastreio por e-mail e WhatsApp. Se ainda não recebeu, escreva para nós com o número do pedido.</p>
+
+<h2>Envie uma mensagem</h2>
+<form id="contact-form" class="card" style="padding:1.25rem" novalidate>
+  <div class="field"><label for="c-name">Nome</label><input id="c-name" name="name" autocomplete="name" required></div>
+  <div class="field"><label for="c-email">E-mail</label><input id="c-email" name="email" type="email" autocomplete="email" required></div>
+  <div class="field"><label for="c-order">Número do pedido (opcional)</label><input id="c-order" name="order"></div>
+  <div class="field"><label for="c-msg">Mensagem</label><textarea id="c-msg" name="message" required maxlength="2000"></textarea></div>
+  <button class="btn btn--buy btn--block" type="submit">Enviar mensagem</button>
+  <p id="contact-ok" class="badge-verified" style="margin-top:.75rem" hidden>Mensagem enviada! Responderemos em breve.</p>
+</form>
+</article></main>
+<script type="module" src="/js/contato.js"></script>
+</body>
+</html>
