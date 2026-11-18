@@ -83,7 +83,7 @@ export const config = {
   // minDays/maxDays = dias úteis. >>> AJUSTE com o prazo real da sua transportadora <<<
   shipping: {
     options: [
-      { id: "padrao", label: "Frete Grátis", description: "Entrega para todo o Brasil", price: 0, minDays: 7, maxDays: 12, enabled: true },
+      { id: "padrao", label: "Frete Grátis", description: "Entrega para todo o Brasil", price: 0, minDays: 4, maxDays: 6, enabled: true },
       // Exemplo de opção paga (ative com enabled: true):
       { id: "expresso", label: "Frete Expresso", description: "Entrega mais rápida", price: 29.9, minDays: 3, maxDays: 6, enabled: false },
     ],
