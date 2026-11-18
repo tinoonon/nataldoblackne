@@ -13,25 +13,44 @@ if (!getCart().length) location.replace("/carrinho");
 else if (!st.orderId || !st.customer?.email) location.replace("/checkout/dados");
 else if (!st.address?.cep || !st.shippingId) location.replace("/checkout/entrega");
 
-const t = renderSummary($("#summary"));
-const c = st.customer, a = st.address;
+function updateDisplay() {
+  const t = renderSummary($("#summary"));
+  const c = st.customer, a = st.address;
 
-$("#review").innerHTML = `
-  <div class="review-box"><b>Contato</b>${esc(c.name)} · ${esc(c.email)} · ${esc(c.phone)} <a href="/checkout/dados">alterar</a></div>
-  <div class="review-box"><b>Entrega</b>${esc(a.street)}, ${esc(a.number)}${a.complement ? " - " + esc(a.complement) : ""} · ${esc(a.district)} · ${esc(a.city)}/${esc(a.state)} · CEP ${esc(a.cep)} <a href="/checkout/entrega">alterar</a><br>${esc(t.shipping.label)} · chega ${deliveryRange(t.shipping)} (dias úteis)</div>`;
+  $("#review").innerHTML = `
+    <div class="review-box"><b>Contato</b>${esc(c.name)} · ${esc(c.email)} · ${esc(c.phone)} <a href="/checkout/dados">alterar</a></div>
+    <div class="review-box"><b>Entrega</b>${esc(a.street)}, ${esc(a.number)}${a.complement ? " - " + esc(a.complement) : ""} · ${esc(a.district)} · ${esc(a.city)}/${esc(a.state)} · CEP ${esc(a.cep)} <a href="/checkout/entrega">alterar</a><br>${esc(t.shipping.label)} · chega ${deliveryRange(t.shipping)} (dias úteis)</div>`;
 
-$("#charge-box").innerHTML = t.chargeIsPartial
-  ? `<b>${esc(config.pix.chargeLabel)}: ${brl(t.chargeCents)} via Pix</b>${esc(config.pix.explanation)}<br><span style="color:var(--muted)">Total do pedido: ${brl(t.totalCents)}</span>`
-  : `<b>Total a pagar via Pix: ${brl(t.totalCents)}</b>Pague pelo app do seu banco com o QR Code ou o código copia e cola.`;
+  $("#charge-box").innerHTML = t.chargeIsPartial
+    ? `<b>${esc(config.pix.chargeLabel)}: ${brl(t.chargeCents)} via Pix</b>${esc(config.pix.explanation)}<br><span style="color:var(--muted)">Total do pedido: ${brl(t.totalCents)}</span>`
+    : `<b>Total a pagar via Pix: ${brl(t.totalCents)}</b>Pague pelo app do seu banco com o QR Code ou o código copia e cola.`;
+  
+  return t;
+}
+
+let t = updateDisplay();
+
+// Atualiza o display quando há mudanças no carrinho
+const observer = setInterval(() => {
+  const newT = updateDisplay();
+  if (newT.totalCents !== t.totalCents) {
+    t = newT;
+  }
+}, 500);
 
 const alertEl = $("#alert");
 $("#pay").addEventListener("click", async (e) => {
   const btn = e.currentTarget;
   alertEl.hidden = true;
+  
+  // Atualiza o carrinho antes de gerar o Pix
+  t = updateDisplay();
+  
   setLoading(btn, true, "Gerando Pix...");
   try {
     await api(`/orders/${st.orderId}/pix`, { method: "POST", body: { items: getCart(), customer: st.customer, address: st.address, shippingId: st.shippingId } });
     track("AddPaymentInfo", { value: t.chargeCents / 100 });
+    clearInterval(observer);
     location.href = `/checkout/pix?pedido=${encodeURIComponent(st.orderId)}`;
   } catch (err) {
     alertEl.textContent = err.message;
@@ -40,3 +59,5 @@ $("#pay").addEventListener("click", async (e) => {
     setLoading(btn, false);
   }
 });
+
+window.addEventListener("beforeunload", () => clearInterval(observer));

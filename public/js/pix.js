@@ -55,6 +55,10 @@ function renderPix(order, exp) {
     </ol>
     <p class="pix__wait"><span class="spinner" aria-hidden="true"></span> Aguardando o pagamento... esta página atualiza sozinha.</p>`;
 
+  // Renderiza o resumo do pedido se houver elemento para isso
+  const summaryEl = $("#summary");
+  if (summaryEl) renderSummary(summaryEl);
+
   $("#copy").addEventListener("click", async () => {
     const code = $("#code");
     try { await navigator.clipboard.writeText(code.value); }

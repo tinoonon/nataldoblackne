@@ -24,7 +24,7 @@ function renderShipping() {
   $("#shipping").innerHTML = options
     .map(
       (o) => `<label class="opt"><input type="radio" name="shipping" value="${esc(o.id)}" ${o.id === shippingId ? "checked" : ""}>
-        <span class="opt__main"><span class="opt__t">${esc(o.label)}</span><span class="opt__d">${esc(o.description || "")} · chega ${deliveryRange(o)} (dias úteis)</span></span>
+        <span class="opt__main"><span class="opt__t">${esc(o.label)}</span><span class="opt__d">chega ${deliveryRange(o)} (dias úteis)</span></span>
         <span class="opt__p">${o.price > 0 ? brl(toCents(o.price)) : '<span class="free">GRÁTIS</span>'}</span></label>`
     )
     .join("");
