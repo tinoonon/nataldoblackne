@@ -76,7 +76,7 @@ export const config = {
   // Aviso de estoque: só ative se estiver ligado a um estoque real.
   stock: { enabled: false, units: 0 },
 
-  // Data-limite para entrega antes do Natal (baseada no prazo REAL da transportadora). Ex.: "05/12"
+  //30/11 para entrega antes do Natal (baseada no prazo REAL da transportadora). Ex.: "05/12"
   christmasDeadline: "[DATA-LIMITE]",
 
   // ---------- Frete ----------
