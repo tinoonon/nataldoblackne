@@ -99,7 +99,7 @@ function renderBuybox() {
       <li>${icon("check")} 8 modos de iluminação e fio flexível</li>
       <li>${icon("check")} Liga em carregador USB ou power bank compatível</li>
     </ul>
-    <p class="buybox__note">${icon("alert")} Fonte USB (carregador) e power bank não estão inclusos.</p>
+    <p class="buybox__note">${icon("alert")} Fonte USB (carregador) e power bank são inclusos.</p>
     <button type="button" class="btn btn--buy btn--block" id="buy" ${available ? "" : "disabled"}>${icon("lock")} COMPRAR COM DESCONTO</button>
     <div class="minis"><span>${icon("truck")}Frete Grátis</span><span>${icon("lock")}Compra 100% Segura</span><span>${icon("shield-check")}Garantia legal</span></div>`;
 }
