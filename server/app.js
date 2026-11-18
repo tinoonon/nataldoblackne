@@ -96,6 +96,14 @@ async function route(req, res, url) {
 
   if (method === "GET" && path === "/api/health") return send(res, 200, { ok: true, pix: pix.configured });
 
+  if (method === "GET" && path === "/api/config") {
+    return send(res, 200, { 
+      tracking: {
+        utmifyToken: env.UTMIFY_TOKEN || ""
+      }
+    });
+  }
+
   if (method === "POST" && path === "/api/orders") {
     if (rateLimited(`draft:${ip}`, 20, 60_000)) throw new HttpError(429, "Muitas tentativas. Aguarde um instante.");
     return send(res, 200, await orders.saveDraft(await readJson(req)));

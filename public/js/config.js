@@ -103,5 +103,6 @@ export const config = {
   tracking: {
     metaPixelId: "", // ex.: "1234567890"
     gaId: "", // ex.: "G-XXXXXXXXXX"
+    utmifyToken: "", // Será carregado do servidor via /api/config
   },
 };

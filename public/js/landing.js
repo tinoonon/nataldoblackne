@@ -6,6 +6,19 @@ import { brl, toCents } from "./lib/shared.js";
 import { setSingleItem } from "./lib/state.js";
 import { track } from "./lib/tracking.js";
 
+// Carrega configurações de rastreamento do servidor
+(async () => {
+  try {
+    const res = await fetch("/api/config");
+    const data = await res.json();
+    if (data.tracking?.utmifyToken) {
+      config.tracking.utmifyToken = data.tracking.utmifyToken;
+    }
+  } catch (e) {
+    console.warn("Não foi possível carregar configurações de rastreamento:", e);
+  }
+})();
+
 const { variants, sizeOptions, colorOptions } = config.product;
 const money = (v) => brl(toCents(v));
 
