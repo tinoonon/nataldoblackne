@@ -44,8 +44,8 @@ export function cartCount() {
   return getCart().reduce((a, i) => a + i.qty, 0);
 }
 
-/* ---------- Checkout: { orderId, customer, address, shippingId } ---------- */
-export const getCheckout = () => read(KEYS.checkout, { orderId: null, customer: {}, address: {}, shippingId: null });
+/* ---------- Checkout: { orderId, customer, address, shippingId, cart } ---------- */
+export const getCheckout = () => read(KEYS.checkout, { orderId: null, customer: {}, address: {}, shippingId: null, cart: [] });
 export const setCheckout = (data) => write(KEYS.checkout, data);
 export function patchCheckout(patch) {
   const next = { ...getCheckout(), ...patch };

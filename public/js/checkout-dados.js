@@ -30,8 +30,13 @@ form.addEventListener("submit", async (e) => {
   const btn = $("button[type=submit]", form);
   setLoading(btn, true, "Salvando...");
   try {
-    const { orderId } = await api("/orders", { method: "POST", body: { id: saved.orderId, items: getCart(), customer } });
-    patchCheckout({ orderId, customer });
+    // Se o carrinho mudou, não reutiliza o orderId anterior
+    const currentCart = getCart();
+    const checkoutCart = saved.cart || [];
+    const cartChanged = JSON.stringify(currentCart) !== JSON.stringify(checkoutCart);
+    
+    const { orderId } = await api("/orders", { method: "POST", body: { id: !cartChanged ? saved.orderId : null, items: currentCart, customer } });
+    patchCheckout({ orderId, customer, cart: currentCart });
     try { track("InitiateCheckout", { value: calcTotals(config, getCart()).subtotalCents / 100 }); } catch { /* noop */ }
     location.href = "/checkout/entrega";
   } catch (err) {
