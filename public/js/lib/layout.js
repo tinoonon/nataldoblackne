@@ -74,7 +74,7 @@ function siteFooter() {
         <p class="footer__line">${icon("shield-check", "i--green")} Site seguro (SSL)</p>
       </div>
     </div>
-    <p class="footer__legal">© <span data-cfg-year></span> ${esc(config.legalName)} · CNPJ ${esc(config.cnpj)}</p>
+    <p class="footer__legal">© <span data-cfg-year></span> ${esc(config.legalName)}</p>
   </footer>`;
 }
 
@@ -82,7 +82,7 @@ function checkoutFooter() {
   return `<footer class="footer footer--co">
     <p>${icon("lock")} Ambiente seguro · Seus dados são protegidos (LGPD)</p>
     <p><a href="/privacidade">Privacidade</a> · <a href="/termos">Termos</a> · <a href="/trocas">Trocas</a> · <a href="/contato">Contato</a></p>
-    <p class="footer__legal">© <span data-cfg-year></span> ${esc(config.legalName)} · CNPJ ${esc(config.cnpj)}</p>
+    <p class="footer__legal">© <span data-cfg-year></span> ${esc(config.legalName)}</p>
   </footer>`;
 }
 

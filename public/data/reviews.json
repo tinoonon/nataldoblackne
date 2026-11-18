@@ -3,8 +3,9 @@
     "id": 1,
     "name": "Diego Martins",
     "city": "Salvador, BA",
+    "avatar": "/img/fotocliente1.png",
     "rating": 5,
-    "image": "/img/cortina-1.jpg",
+    "image": "/img/fotocu1.png",
     "title": "Transformação espetacular!",
     "review": "Instalei a cortina de LED colorida no meu quarto e ficou de tirar o fôlego! As cores são super vibrantes, a qualidade é excelente e o controle remoto é muito prático. Meus amigos ficaram maravilhados quando viram. Recomendo demais, superou todas as minhas expectativas!"
   },
@@ -12,8 +13,9 @@
     "id": 2,
     "name": "Fernanda Oliveira",
     "city": "Brasília, DF",
+    "avatar": "/img/fotocliente2.png",
     "rating": 5,
-    "image": "/img/cortina-2.jpg",
+    "image": "/img/fotocu2.png",
     "title": "Perfeita para festas!",
     "review": "Comprei para decorar minha sala para uma festa e foi um sucesso absoluto! Os convidados não pararam de tirar fotos. As luzes brancas quentes criam uma atmosfera super aconchegante. O produto é resistente e chegou bem embalado. Muito bom mesmo, voltaria a comprar!"
   },
@@ -21,8 +23,9 @@
     "id": 3,
     "name": "Lucas Ferreira",
     "city": "Porto Alegre, RS",
+    "avatar": "/img/fotocliente3.png",
     "rating": 5,
-    "image": "/img/cortina-3.jpg",
+    "image": "/img/fotocu3.png",
     "title": "Melhor compra do ano!",
     "review": "A qualidade dessa cortina de luzes é incrível! Instalei na minha varanda e transformou o ambiente completamente. As luzes não esquentam, consomem pouca energia e já estou usando há meses sem nenhum problema. Vale cada centavo investido, recomendo para todos os meus amigos!"
   },
@@ -30,8 +33,9 @@
     "id": 4,
     "name": "Amanda Costa",
     "city": "Recife, PE",
+    "avatar": "/img/fotocliente4.png",
     "rating": 5,
-    "image": "/img/cortina-4.jpg",
+    "image": "/img/fotocu4.png",
     "title": "Decoração de sonho!",
     "review": "Usei as luzes para o casamento da minha filha e o resultado foi absolutamente perfeito! A quantidade de pontos de luz é distribuída de forma impecável, cria um clima muito romântico e elegante. Todos os convidados elogiaram demais. Produto de qualidade superior, recomendo muitíssimo!"
   }

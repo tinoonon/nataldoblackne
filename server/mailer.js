@@ -39,7 +39,7 @@ export function confirmationEmail({ config, order, view, brl }) {
       <p>${esc(a.street)}, ${esc(a.number)}${a.complement ? " - " + esc(a.complement) : ""}<br>${esc(a.district)} · ${esc(a.city)}/${esc(a.state)} · CEP ${esc(a.cep)}<br>
       Previsão: <b>${esc(view.deliveryEstimate)}</b> (${esc(view.shippingLabel)})</p>
       <p>Assim que o pedido for despachado, enviaremos o código de rastreio por e-mail e WhatsApp.</p>
-      <p style="font-size:13px;color:#6b5a52">Dúvidas? Responda este e-mail ou escreva para ${esc(config.supportEmail)}.<br>${esc(config.legalName)} · CNPJ ${esc(config.cnpj)}</p>
+      <p style="font-size:13px;color:#6b5a52">Dúvidas? Responda este e-mail ou escreva para ${esc(config.supportEmail)}.<br>${esc(config.legalName)}</p>
     </div>`,
   };
 }

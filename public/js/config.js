@@ -13,7 +13,7 @@ export const config = {
   // ---------- Marca / empresa ----------
   brand: "[NOME DA MARCA]",
   slogan: "Transforme qualquer parede em um cenário de luz.",
-  legalName: "[RAZÃO SOCIAL]",
+  legalName: "[TITIO NOEL LTDA]",
   cnpj: "[CNPJ]",
   supportEmail: "[EMAIL DE SUPORTE]",
   supportWhatsapp: "", // só números com DDI+DDD, ex.: "5511999999999" (vazio = esconde o botão)
@@ -23,8 +23,8 @@ export const config = {
 
   // ---------- Imagens (caminhos dentro de /public). null = mostra placeholder ----------
   images: {
-    logo: null, // ex.: "/img/logo.png"
-    logoLight: null, // logo para fundo escuro (rodapé); se null usa o texto da marca
+    logo: "/img/logosite.png", // ex.: "/img/logo.png"
+    logoLight: "/img/logosite.png", // logo para fundo escuro (rodapé); se null usa o texto da marca
     why1: "/img/cortina-4.jpg", // card "Branco frio"
     why2: "/img/cortina-3.jpg", // card "Branco quente"
     why3: "/img/cortina-2.jpg", // card "Multicolorido"
@@ -56,12 +56,12 @@ export const config = {
     // >>> CONFIRA OS PREÇOS ABAIXO <<< — são valores de exemplo; troque pelos seus.
     // Se price for 0, o botão de compra daquela variação fica bloqueado.
     variants: [
-      { id: "33f", size: "3x3", color: "frio", label: "3 m x 3 m · Branco frio", price: 29.9, oldPrice: 59.9 },
-      { id: "33q", size: "3x3", color: "quente", label: "3 m x 3 m · Branco quente", price: 29.9, oldPrice: 59.9 },
-      { id: "33c", size: "3x3", color: "color", label: "3 m x 3 m · Colorida", price: 29.9, oldPrice: 59.9 },
-      { id: "43f", size: "4x3", color: "frio", label: "4 m x 3 m · Branco frio", price: 39.9, oldPrice: 79.9 },
-      { id: "43q", size: "4x3", color: "quente", label: "4 m x 3 m · Branco quente", price: 39.9, oldPrice: 79.9 },
-      { id: "43c", size: "4x3", color: "color", label: "4 m x 3 m · Colorida", price: 39.9, oldPrice: 79.9 },
+      { id: "33f", size: "3x3", color: "frio", label: "3 m x 3 m · Branco frio", price: 14.9, oldPrice: 59.9 },
+      { id: "33q", size: "3x3", color: "quente", label: "3 m x 3 m · Branco quente", price: 14.9, oldPrice: 59.9 },
+      { id: "33c", size: "3x3", color: "color", label: "3 m x 3 m · Colorida", price: 14.9, oldPrice: 59.9 },
+      { id: "43f", size: "4x3", color: "frio", label: "4 m x 3 m · Branco frio", price: 19.9, oldPrice: 79.9 },
+      { id: "43q", size: "4x3", color: "quente", label: "4 m x 3 m · Branco quente", price: 19.9, oldPrice: 79.9 },
+      { id: "43c", size: "4x3", color: "color", label: "4 m x 3 m · Colorida", price: 19.9, oldPrice: 79.9 },
     ],
   },
   maxQty: 10,
