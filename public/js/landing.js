@@ -200,11 +200,12 @@ const MIN_REVIEWS = 4;
 function reviewCard(r) {
   const media = r.video
     ? `<video class="rcard__media" src="${esc(r.video)}" ${r.poster ? `poster="${esc(r.poster)}"` : ""} controls playsinline preload="none" aria-label="Vídeo de ${esc(r.name)}"></video>`
-    : r.photo
-      ? `<img class="rcard__media" src="${esc(r.photo)}" alt="Foto enviada por ${esc(r.name)}" loading="lazy" decoding="async">`
+    : r.image
+      ? `<img class="rcard__media" src="${esc(r.image)}" alt="Foto enviada por ${esc(r.name)}" loading="lazy" decoding="async">`
       : "";
+  const avatar = r.avatar ? `<img class="rcard__avatar" src="${esc(r.avatar)}" alt="Foto de perfil de ${esc(r.name)}" loading="lazy" decoding="async">` : "";
   return `<article class="card rcard">${media}
-    <div class="rcard__body">${stars(r.rating)}${r.title ? `<h3>${esc(r.title)}</h3>` : ""}<p>${esc(r.text)}</p>
+    <div class="rcard__body">${avatar}${stars(r.rating)}${r.title ? `<h3>${esc(r.title)}</h3>` : ""}<p>${esc(r.review || r.text || "")}</p>
       <p class="rcard__name">${esc(r.name)}${r.city ? ` · <span style="font-weight:400">${esc(r.city)}</span>` : ""}</p>
       <span class="badge-verified">${icon("badge-check")} Compra verificada</span></div>
   </article>`;
@@ -229,7 +230,7 @@ loadReviews().then((list) => {
 
 /* ---------------- FAQ ---------------- */
 const faq = [
-  ["Como a cortina é alimentada?", "Por conexão USB 5V. Você pode ligar em um carregador USB ou em um power bank compatível. Atenção: a fonte USB e o power bank não estão inclusos."],
+  ["Como a cortina é alimentada?", "Por conexão USB 5V. Você pode ligar em um carregador USB ou em um power bank compatível. A fonte USB e o power bank são inclusos na embalagem."],
   ["O que vem na embalagem?", "1 cortina de luz LED no tamanho e na cor que você escolheu e 1 controle remoto."],
   ["Quais tamanhos e cores existem?", "Dois tamanhos (3 m x 3 m e 4 m x 3 m) e três cores de luz: branco frio, branco quente e colorida. Escolha a combinação antes de finalizar a compra."],
   ["Quantos modos de iluminação tem?", "São 8 modos, que você troca pelo controle remoto."],
