@@ -36,7 +36,7 @@ export const config = {
     title: "Cortina de Luz LED 300 LEDs 3x3m ou 4x3m USB com Controle Remoto, 8 Modos, Branco Frio, Quente ou Colorida",
     // Nome curto (carrinho, checkout, e-mails, Pix).
     name: "Cortina de Luz LED USB com Controle Remoto",
-    installments: 12,
+    installments: 1,
     discountBadge: "Oferta Black Friday",
     // Galeria: 5 posições. null = placeholder "[FOTO n]". A 1ª aparece como principal.
     gallery: ["/img/cortina-1.jpg", "/img/cortina-2.jpg", "/img/cortina-3.jpg", "/img/cortina-4.jpg", "/img/cortina-5.jpg"],
@@ -77,7 +77,7 @@ export const config = {
   stock: { enabled: false, units: 0 },
 
   //30/11 para entrega antes do Natal (baseada no prazo REAL da transportadora). Ex.: "05/12"
-  christmasDeadline: "[DATA-LIMITE]",
+  christmasDeadline: "30/11",
 
   // ---------- Frete ----------
   // minDays/maxDays = dias úteis. >>> AJUSTE com o prazo real da sua transportadora <<<

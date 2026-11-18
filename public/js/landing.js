@@ -35,13 +35,13 @@ let current = 0;
 function renderGallery() {
   const g = config.product.gallery;
   const main = g[current]
-    ? `<img src="${esc(g[current])}" alt="${esc(config.product.name)} — foto ${current + 1}" width="800" height="800" ${current === 0 ? 'fetchpriority="high"' : ""}>`
+    ? `<img src="${esc(g[current])}" alt="${esc(config.product.name)} — foto ${current + 1}" width="800" height="800" ${current === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`
     : placeholder(current === 0 ? "FOTO PRINCIPAL DO PRODUTO" : `FOTO ${current + 1} DO PRODUTO`);
   gallery.innerHTML = `<div class="gallery__main">${main}<span class="gallery__badge">${esc(config.product.discountBadge)}</span></div>
     <div class="gallery__thumbs">${g
       .map(
         (src, i) => `<button type="button" class="gallery__thumb" aria-label="Ver imagem ${i + 1}" aria-current="${i === current}" data-i="${i}">${
-          src ? `<img src="${esc(src)}" alt="" loading="lazy" width="120" height="120">` : placeholder(`FOTO ${i + 1}`)
+          src ? `<img src="${esc(src)}" alt="" loading="lazy" width="120" height="120" decoding="async">` : placeholder(`FOTO ${i + 1}`)
         }</button>`
       )
       .join("")}</div>`;
@@ -199,11 +199,11 @@ function renderVideoCarousel(list) {
 const MIN_REVIEWS = 4;
 function reviewCard(r) {
   const media = r.video
-    ? `<video class="rcard__media" src="${esc(r.video)}" ${r.poster ? `poster="${esc(r.poster)}"` : ""} controls playsinline preload="none" aria-label="Vídeo de ${esc(r.name)}"></video>`
+    ? `<video class="rcard__media" src="${esc(r.video)}" ${r.poster ? `poster="${esc(r.poster)}"` : ""} controls playsinline preload="none" aria-label="Vídeo de ${esc(r.name)}" loading="lazy"></video>`
     : r.image
-      ? `<img class="rcard__media" src="${esc(r.image)}" alt="Foto enviada por ${esc(r.name)}" loading="lazy" decoding="async">`
+      ? `<img class="rcard__media" src="${esc(r.image)}" alt="Foto enviada por ${esc(r.name)}" loading="lazy" decoding="async" width="400" height="400">`
       : "";
-  const avatar = r.avatar ? `<img class="rcard__avatar" src="${esc(r.avatar)}" alt="Foto de perfil de ${esc(r.name)}" loading="lazy" decoding="async">` : "";
+  const avatar = r.avatar ? `<img class="rcard__avatar" src="${esc(r.avatar)}" alt="Foto de perfil de ${esc(r.name)}" loading="lazy" decoding="async" width="48" height="48">` : "";
   return `<article class="card rcard">${media}
     <div class="rcard__body">${avatar}${stars(r.rating)}${r.title ? `<h3>${esc(r.title)}</h3>` : ""}<p>${esc(r.review || r.text || "")}</p>
       <p class="rcard__name">${esc(r.name)}${r.city ? ` · <span style="font-weight:400">${esc(r.city)}</span>` : ""}</p>
@@ -236,7 +236,7 @@ const faq = [
   ["Quantos modos de iluminação tem?", "São 8 modos, que você troca pelo controle remoto."],
   ["Onde posso usar?", "No quarto, sala, janela, festas, casamentos e na decoração de Natal. Evite instalar perto de fontes de calor ou em locais sujeitos a imersão em água."],
   ["Como funciona a entrega e qual o prazo?", `Frete grátis para todo o Brasil com código de rastreio. Pedidos até ${config.christmasDeadline} chegam antes do Natal.`],
-  ["Posso parcelar?", `Sim, em até ${config.product.installments}x sem juros no cartão.`],
+  ["Posso parcelar?", "Não, aceitamos apenas pagamento via Pix no momento."],
   ["E se eu não gostar?", "Você tem 7 dias após o recebimento para devolver, conforme o Código de Defesa do Consumidor."],
 ];
 $("#faq-list").innerHTML = faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("");

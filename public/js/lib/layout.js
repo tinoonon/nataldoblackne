@@ -70,7 +70,7 @@ function siteFooter() {
       </nav>
       <div>
         <p class="footer__h">Pagamento seguro</p>
-        <p class="footer__line">${icon("lock")} Pix · Cartão em até ${config.product.installments}x</p>
+        <p class="footer__line">${icon("lock")} Pix</p>
         <p class="footer__line">${icon("shield-check", "i--green")} Site seguro (SSL)</p>
       </div>
     </div>
