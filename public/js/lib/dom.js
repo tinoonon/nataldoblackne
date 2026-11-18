@@ -46,7 +46,7 @@ export async function api(path, { method = "GET", body } = {}) {
     /* resposta sem JSON */
   }
   if (!res.ok) {
-    const err = new Error(data?.error || "Algo deu errado. Tente novamente.");
+    const err = new Error(data?.error || `Algo deu errado (erro ${res.status}). Tente novamente.`);
     err.status = res.status;
     err.fields = data?.fields;
     throw err;

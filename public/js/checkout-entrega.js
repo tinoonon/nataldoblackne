@@ -75,7 +75,7 @@ form.addEventListener("submit", async (e) => {
   const btn = $("button[type=submit]", form);
   setLoading(btn, true, "Salvando...");
   try {
-    await api(`/orders/${st.orderId}`, { method: "PATCH", body: { address, shippingId } });
+    await api(`/orders/${st.orderId}/address`, { method: "POST", body: { address, shippingId } });
     patchCheckout({ address, shippingId });
     location.href = "/checkout/pagamento";
   } catch (err) {

@@ -54,12 +54,12 @@ try {
   ok(r.status === 200 && /^NAT-[0-9A-F]{6}$/.test(r.data.number), `pedido criado (${r.data.number})`);
   r = await call("POST", "/api/orders", { id, items, customer });
   ok(r.data.orderId === id, "reenviar a etapa 1 mantém o mesmo id do pedido");
-  r = await call("PATCH", `/api/orders/${id}`, { address: { ...address, cep: "123" }, shippingId: "padrao" });
+  r = await call("POST", `/api/orders/${id}/address`, { address: { ...address, cep: "123" }, shippingId: "padrao" });
   ok(r.status === 422 && r.data.fields.cep, "CEP inválido recusado");
-  r = await call("PATCH", `/api/orders/${id}`, { address, shippingId: "expresso" });
+  r = await call("POST", `/api/orders/${id}/address`, { address, shippingId: "expresso" });
   ok(r.status === 400, "frete desativado não pode ser escolhido");
-  r = await call("PATCH", `/api/orders/${id}`, { address, shippingId: "padrao" });
-  ok(r.status === 200, "endereço + frete validados");
+  r = await call("POST", `/api/orders/${id}/address`, { address, shippingId: "padrao" });
+  ok(r.status === 200, "endereço + frete validados (POST /address)");
   r = await call("POST", `/api/orders/${id}/pix`, { ...state, address: undefined });
   ok(r.status === 422, "não gera Pix sem endereço");
   r = await call("GET", "/api/orders/nao-e-uuid/status");

@@ -106,6 +106,7 @@ async function route(req, res, url) {
     if (method === "GET") return send(res, 200, await orders.getView(m[1]));
     if (method === "PATCH") return send(res, 200, await orders.saveAddress(m[1], await readJson(req)));
   }
+  if ((m = path.match(new RegExp(`^/api/orders/${UUID}/address$`))) && (method === "POST" || method === "PATCH")) return send(res, 200, await orders.saveAddress(m[1], await readJson(req)));
   if ((m = path.match(new RegExp(`^/api/orders/${UUID}/status$`))) && method === "GET") return send(res, 200, await orders.status(m[1]));
   if ((m = path.match(new RegExp(`^/api/orders/${UUID}/pix$`))) && method === "POST") {
     if (rateLimited(`pix:${ip}`, 10, 60_000)) throw new HttpError(429, "Muitas tentativas de gerar Pix. Aguarde um minuto.");
