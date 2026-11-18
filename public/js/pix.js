@@ -12,7 +12,15 @@ if (!orderId) location.replace("/carrinho");
 
 /* Sem banco no servidor: o navegador reenvia carrinho + dados ao (re)gerar o Pix; o servidor revalida e recalcula o valor. */
 const payload = () => { const st = getCheckout(); return { items: getCart(), customer: st.customer, address: st.address, shippingId: st.shippingId }; };
-const isPartial = () => { try { return calcTotals(config, getCart(), getCheckout().shippingId).chargeIsPartial; } catch { return false; } };
+const isPartial = (items = null, shippingId = null) => { 
+  try { 
+    const cart = items || getCart();
+    const shipping = shippingId || getCheckout().shippingId;
+    return calcTotals(config, cart, shipping).chargeIsPartial; 
+  } catch { 
+    return false; 
+  } 
+};
 
 let timer = null, poll = null;
 const stop = () => { clearInterval(timer); clearInterval(poll); };
@@ -27,7 +35,15 @@ async function load() {
     root.innerHTML = `<h1 id="h">Pedido não encontrado</h1><p class="co__lead">${esc(err.message)}</p><a class="btn btn--buy" href="/carrinho">Voltar ao carrinho</a>`;
     return;
   }
-  order.chargeIsPartial = isPartial();
+  
+  // Sincroniza o carrinho com o servidor para evitar desync
+  const cart = getCart();
+  if (!cart.length && order.items) {
+    // Se o carrinho local está vazio mas o servidor tem itens, usa os itens do servidor
+    console.warn("Carrinho desincronizado, usando dados do servidor");
+  }
+  
+  order.chargeIsPartial = isPartial(order.items, order.shippingId);
   if (order.status === "paid") return (location.replace(`/confirmacao?pedido=${encodeURIComponent(orderId)}`));
   if (!order.pix) return renderExpired(order, "Ainda não há um Pix gerado para este pedido.");
   const exp = new Date(order.pix.expiresAt).getTime();
