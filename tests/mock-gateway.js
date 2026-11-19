@@ -7,6 +7,7 @@ import { createServer } from "node:http";
 export function startMockGateway(port) {
   const txs = new Map(); // id -> transação
   const emails = [];
+  const utmify = []; // vendas recebidas na Utmify simulada
   let seq = 5000;
 
   const server = createServer(async (req, res) => {
@@ -38,10 +39,15 @@ export function startMockGateway(port) {
       const t = txs.get(key) || [...txs.values()].find((x) => x.external_id === key || x.txid === key);
       return t ? json(200, t) : json(404, { error: "Transacao nao encontrada" });
     }
+    if (req.method === "POST" && url.pathname === "/api-credentials/orders") {
+      if (req.headers["x-api-token"] !== "UTM_TEST_TOKEN") return json(404, { error: "API_CREDENTIAL_NOT_FOUND" });
+      utmify.push(body);
+      return json(200, { result: "OK" });
+    }
     if (req.method === "POST" && url.pathname === "/emails") { emails.push(body); return json(200, { id: "mail_1" }); }
     // controles de teste
     if (url.pathname === "/__approve") { const t = txs.get(url.searchParams.get("id")); t.status = url.searchParams.get("status") || "paid"; if (url.searchParams.get("amount")) t.amount = Number(url.searchParams.get("amount")); return json(200, { ok: true }); }
-    if (url.pathname === "/__state") return json(200, { payments: [...txs.values()], emails });
+    if (url.pathname === "/__state") return json(200, { payments: [...txs.values()], emails, utmify });
     json(404, { error: "not found" });
   });
   return new Promise((resolve) => server.listen(port, () => resolve(server)));

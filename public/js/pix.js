@@ -5,13 +5,15 @@ import { brl, calcTotals } from "./lib/shared.js";
 import { getCart, getCheckout } from "./lib/state.js";
 import { config } from "./config.js";
 import { renderSummary } from "./lib/summary.js";
+import { getUtms } from "./lib/utm.js";
+import { reportPaid } from "./lib/utmify-sale.js";
 
 const orderId = new URLSearchParams(location.search).get("pedido") || getCheckout().orderId;
 const root = $("#pix-root");
 if (!orderId) location.replace("/carrinho");
 
 /* Sem banco no servidor: o navegador reenvia carrinho + dados ao (re)gerar o Pix; o servidor revalida e recalcula o valor. */
-const payload = () => { const st = getCheckout(); return { items: getCart(), customer: st.customer, address: st.address, shippingId: st.shippingId }; };
+const payload = () => { const st = getCheckout(); return { items: getCart(), customer: st.customer, address: st.address, shippingId: st.shippingId, tracking: getUtms() }; };
 const isPartial = (items = null, shippingId = null) => { 
   try { 
     const cart = items || getCart();
@@ -44,7 +46,7 @@ async function load() {
   }
   
   order.chargeIsPartial = isPartial(order.items, order.shippingId);
-  if (order.status === "paid") return (location.replace(`/confirmacao?pedido=${encodeURIComponent(orderId)}`));
+  if (order.status === "paid") { await reportPaid(orderId); return (location.replace(`/confirmacao?pedido=${encodeURIComponent(orderId)}`)); }
   if (!order.pix) return renderExpired(order, "Ainda não há um Pix gerado para este pedido.");
   const exp = new Date(order.pix.expiresAt).getTime();
   if (Date.now() >= exp) return renderExpired(order);
@@ -94,7 +96,7 @@ function renderPix(order, exp) {
   poll = setInterval(async () => {
     try {
       const s = await api(`/orders/${orderId}/status`);
-      if (s.status === "paid") { stop(); location.replace(`/confirmacao?pedido=${encodeURIComponent(orderId)}`); }
+      if (s.status === "paid") { stop(); await reportPaid(orderId); location.replace(`/confirmacao?pedido=${encodeURIComponent(orderId)}`); }
       else if (s.status === "expired") { stop(); renderExpired(order); }
     } catch { /* tenta de novo no próximo ciclo */ }
   }, 4000);

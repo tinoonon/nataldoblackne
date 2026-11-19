@@ -7,6 +7,7 @@
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createProfanus } from "./providers/profanus.js";
+import { createUtmify } from "./providers/utmify.js";
 import { createMailer } from "./mailer.js";
 import { createOrders, HttpError } from "./orders.js";
 import { isValidEmail } from "../public/js/lib/shared.js";
@@ -25,7 +26,9 @@ export const pix = createProfanus({
   apiBase: env.PROFANUS_API_BASE || undefined, // só para testes com gateway simulado
 });
 export const mailer = createMailer({ apiKey: env.RESEND_API_KEY, from: env.MAIL_FROM, apiBase: env.RESEND_API_BASE });
-const orders = createOrders({ pix });
+// Token de VENDAS da Utmify: só no servidor. (Aceita UTMIFY_TOKEN ou UTMIFY_API_TOKEN.)
+export const utmify = createUtmify({ token: (env.UTMIFY_TOKEN || env.UTMIFY_API_TOKEN || "").trim(), apiBase: env.UTMIFY_API_BASE || undefined });
+const orders = createOrders({ pix, utmify });
 
 export const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
@@ -34,12 +37,12 @@ export const SECURITY_HEADERS = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "Content-Security-Policy": [
     "default-src 'self'",
-    "script-src 'self' https://connect.facebook.net https://www.googletagmanager.com",
+    "script-src 'self' https://connect.facebook.net https://www.googletagmanager.com https://cdn.utmify.com.br",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: https:",
     "media-src 'self' https:",
-    "connect-src 'self' https://viacep.com.br https://www.facebook.com https://connect.facebook.net https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+    "connect-src 'self' https://viacep.com.br https://www.facebook.com https://connect.facebook.net https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://*.utmify.com.br",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -94,15 +97,7 @@ async function route(req, res, url) {
 
   if (rateLimited(`api:${ip}`, 120, 60_000)) throw new HttpError(429, "Muitas requisições. Aguarde um instante.");
 
-  if (method === "GET" && path === "/api/health") return send(res, 200, { ok: true, pix: pix.configured });
-
-  if (method === "GET" && path === "/api/config") {
-    return send(res, 200, { 
-      tracking: {
-        utmifyToken: env.UTMIFY_TOKEN || ""
-      }
-    });
-  }
+  if (method === "GET" && path === "/api/health") return send(res, 200, { ok: true, pix: pix.configured, utmify: utmify.configured });
 
   if (method === "POST" && path === "/api/orders") {
     if (rateLimited(`draft:${ip}`, 20, 60_000)) throw new HttpError(429, "Muitas tentativas. Aguarde um instante.");
@@ -116,9 +111,13 @@ async function route(req, res, url) {
   }
   if ((m = path.match(new RegExp(`^/api/orders/${UUID}/address$`))) && (method === "POST" || method === "PATCH")) return send(res, 200, await orders.saveAddress(m[1], await readJson(req)));
   if ((m = path.match(new RegExp(`^/api/orders/${UUID}/status$`))) && method === "GET") return send(res, 200, await orders.status(m[1]));
+  if ((m = path.match(new RegExp(`^/api/orders/${UUID}/paid$`))) && method === "POST") {
+    if (rateLimited(`paid:${ip}`, 20, 60_000)) throw new HttpError(429, "Muitas tentativas.");
+    return send(res, 200, await orders.notifyPaid(m[1], { ...(await readJson(req)), ip }));
+  }
   if ((m = path.match(new RegExp(`^/api/orders/${UUID}/pix$`))) && method === "POST") {
     if (rateLimited(`pix:${ip}`, 10, 60_000)) throw new HttpError(429, "Muitas tentativas de gerar Pix. Aguarde um minuto.");
-    return send(res, 200, await orders.createPix(m[1], await readJson(req)));
+    return send(res, 200, await orders.createPix(m[1], { ...(await readJson(req)), ip }));
   }
 
   if (method === "POST" && path === "/api/contact") {

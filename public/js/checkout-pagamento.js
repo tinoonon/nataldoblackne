@@ -7,6 +7,7 @@ import { getCart, getCheckout } from "./lib/state.js";
 import { renderSummary } from "./lib/summary.js";
 import { setLoading } from "./lib/forms.js";
 import { track } from "./lib/tracking.js";
+import { getUtms } from "./lib/utm.js";
 
 const st = getCheckout();
 if (!getCart().length) location.replace("/carrinho");
@@ -48,7 +49,7 @@ $("#pay").addEventListener("click", async (e) => {
   
   setLoading(btn, true, "Gerando Pix...");
   try {
-    await api(`/orders/${st.orderId}/pix`, { method: "POST", body: { items: getCart(), customer: st.customer, address: st.address, shippingId: st.shippingId } });
+    await api(`/orders/${st.orderId}/pix`, { method: "POST", body: { items: getCart(), customer: st.customer, address: st.address, shippingId: st.shippingId, tracking: getUtms() } });
     track("AddPaymentInfo", { value: t.chargeCents / 100 });
     clearInterval(observer);
     location.href = `/checkout/pix?pedido=${encodeURIComponent(st.orderId)}`;

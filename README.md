@@ -29,3 +29,8 @@ npm test                  # teste de ponta a ponta com gateway SIMULADO
 - O status do pedido vem sempre de `GET /api/pix/{external_id}` na Profanus; a tela do Pix consulta a cada ~4 s. Não há webhook.
 - **Os dados de entrega ficam resumidos na descrição do Pix** (pedido, quantidade/tamanho, nome, telefone, CEP, número, rua…, máx. 140 caracteres). É por ela que você identifica quem pagou e para onde enviar, no painel da Profanus.
 - Mensagens do formulário de contato vão para os Logs da Vercel (e por e-mail, se configurar `RESEND_API_KEY`, `MAIL_FROM`, `CONTACT_NOTIFY_EMAIL`).
+
+
+## Utmify
+- Pixel + UTMs: carregados em todas as páginas por `public/js/lib/utmify-pixel.js` (ID em `config.tracking.utmifyPixelId`). A CSP já libera `cdn.utmify.com.br`.
+- Vendas: variável `UTMIFY_TOKEN` na Vercel. O servidor envia `waiting_payment` ao gerar o Pix e `paid` quando a Profanus confirma. Confira `/api/health` → `"utmify":true` e os Logs da Vercel (`[utmify] ...`).

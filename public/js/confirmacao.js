@@ -8,6 +8,7 @@ import { $, api, esc, icon, whatsappLink } from "./lib/dom.js";
 import { brl, calcTotals, deliveryRange } from "./lib/shared.js";
 import { clearAll, getCart, getCheckout } from "./lib/state.js";
 import { trackOnce } from "./lib/tracking.js";
+import { reportPaid } from "./lib/utmify-sale.js";
 
 const st = getCheckout();
 const orderId = new URLSearchParams(location.search).get("pedido") || st.orderId;
@@ -34,6 +35,7 @@ async function main() {
   }
 
   const d = localDetails();
+  await reportPaid(orderId); // backup: precisa vir ANTES do clearAll (usa carrinho/dados locais)
   clearAll(); // pedido concluído: limpa carrinho/checkout locais
   // Valor do evento = valor efetivamente pago agora via Pix.
   trackOnce(`purchase.${orderId}`, "Purchase", { value: (s.amountCents ?? d?.t.chargeCents ?? 0) / 100 }, orderId);

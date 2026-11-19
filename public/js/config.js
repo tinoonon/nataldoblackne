@@ -103,6 +103,6 @@ export const config = {
   tracking: {
     metaPixelId: "", // ex.: "1234567890"
     gaId: "", // ex.: "G-XXXXXXXXXX"
-    utmifyToken: "", // Será carregado do servidor via /api/config
+    utmifyPixelId: "6afe27549d98ca4e22f4e1c5", // Pixel da Utmify (público). O TOKEN de vendas fica só no servidor (UTMIFY_TOKEN).
   },
 };

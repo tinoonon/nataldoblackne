@@ -69,7 +69,7 @@ function describe(id, t, c, a) {
   return txt.slice(0, 140);
 }
 
-export function createOrders({ pix, log = console }) {
+export function createOrders({ pix, utmify = null, log = console }) {
   const checkId = (id) => {
     if (!UUID_RE.test(id)) throw new HttpError(404, "Pedido não encontrado.");
     return id.toLowerCase();
@@ -86,6 +86,21 @@ export function createOrders({ pix, log = console }) {
       if (tx.status === "paid" || isLive(tx)) return { last, next: k + 1 };
     }
     return { last, next: MAX_ATTEMPTS + 1 };
+  }
+
+  /* ---------- Utmify (rastreio de vendas) ---------- */
+  // createdAt precisa ser o MESMO em "waiting_payment" e "paid": derivamos do vencimento do Pix (vencimento - validade configurada).
+  const createdAtOf = (tx) => new Date(tx.expiresAt.getTime() - config.pix.expiresMinutes * 60_000);
+  const paidSent = new Set(); // evita reenvio na mesma instância (a Utmify também atualiza pelo mesmo orderId)
+
+  function utmifyPayload(id, status, tx, t, c, tracking, ip) {
+    return {
+      orderId: id, status, createdAt: createdAtOf(tx),
+      approvedDate: status === "paid" ? new Date() : null,
+      customer: c,
+      products: t.lines.map((l) => ({ id: l.size, name: l.name, qty: l.qty, unitCents: l.unitCents })),
+      tracking, totalCents: t.chargeCents, ip,
+    };
   }
 
   const viewPix = (tx) => ({ code: tx.code, qrBase64: tx.qrBase64, expiresAt: tx.expiresAt.toISOString(), amountCents: tx.amountCents });
@@ -109,7 +124,7 @@ export function createOrders({ pix, log = console }) {
   }
 
   /* ---------- Etapa 3: gera o Pix (recebe o estado do checkout e revalida tudo) ---------- */
-  async function createPix(id, { items, customer, address, shippingId } = {}) {
+  async function createPix(id, { items, customer, address, shippingId, tracking, ip } = {}) {
     id = checkId(id);
     const c = checkCustomer(customer);
     const a = checkAddress(address);
@@ -125,7 +140,10 @@ export function createOrders({ pix, log = console }) {
       const { last, next } = await latest(id);
       if (last?.status === "paid") throw new HttpError(409, "Este pedido já foi pago.");
       // Reaproveita o Pix ainda válido (duplo clique / voltar e avançar não cobra duas vezes)
-      if (last && isLive(last) && last.amountCents === t.chargeCents && last.expiresAt.getTime() > Date.now() + 60_000) return viewPix(last);
+      if (last && isLive(last) && last.amountCents === t.chargeCents && last.expiresAt.getTime() > Date.now() + 60_000) {
+        await utmify?.send(utmifyPayload(id, "waiting_payment", last, t, c, tracking, ip));
+        return viewPix(last);
+      }
       if (next > MAX_ATTEMPTS) throw new HttpError(429, "Muitos códigos Pix gerados para este pedido. Fale com o suporte.");
 
       const created = await pix.createPix({
@@ -134,6 +152,7 @@ export function createOrders({ pix, log = console }) {
         externalId: `${id}_${next}`,
         expiresAt: new Date(Date.now() + config.pix.expiresMinutes * 60_000),
       });
+      await utmify?.send(utmifyPayload(id, "waiting_payment", created, t, c, tracking, ip));
       return viewPix(created);
     } catch (e) {
       if (e instanceof HttpError) throw e;
@@ -157,6 +176,25 @@ export function createOrders({ pix, log = console }) {
     return { status: statusOf(last), expiresAt: last?.expiresAt?.toISOString() ?? null, amountCents: last?.amountCents ?? null, number: orderNumber(id) };
   }
 
+  /**
+   * Chamado pelo navegador quando o Pix aparece como pago. O pagamento é CONFIRMADO de novo na Profanus
+   * (o cliente não consegue forjar uma venda); só então enviamos "paid" à Utmify.
+   */
+  async function notifyPaid(id, { items, customer, address, shippingId, tracking, ip } = {}) {
+    id = checkId(id);
+    if (!utmify?.configured) return { ok: true, sent: false, reason: "utmify_not_configured" };
+    if (!pix.configured) throw new HttpError(503, "Pagamento indisponível no momento.");
+    const c = checkCustomer(customer);
+    const t = totalsFor(items, shippingId);
+    let last;
+    try { ({ last } = await latest(id)); } catch (e) { throw new HttpError(502, "Não foi possível consultar o pagamento agora."); }
+    if (last?.status !== "paid") throw new HttpError(409, "Pagamento ainda não confirmado.");
+    if (paidSent.has(id)) return { ok: true, sent: false, reason: "already_sent" };
+    const r = await utmify.send(utmifyPayload(id, "paid", last, t, c, tracking, ip));
+    if (r.ok) paidSent.add(id);
+    return { ok: true, sent: Boolean(r.ok) };
+  }
+
   /** Dados para a tela do Pix. */
   async function getView(id) {
     id = checkId(id);
@@ -169,5 +207,5 @@ export function createOrders({ pix, log = console }) {
     return { id, number: s.number, status: s.status, pix: pixView, chargeIsPartial: false };
   }
 
-  return { saveDraft, saveAddress, createPix, status, getView };
+  return { saveDraft, saveAddress, createPix, notifyPaid, status, getView };
 }

@@ -6,6 +6,8 @@ import { config } from "../config.js";
 import { $, bindConfigText, esc, icon, whatsappLink } from "./dom.js";
 import { cartCount } from "./state.js";
 import { getConsent, setConsent, loadTracking } from "./tracking.js";
+import { captureUtms } from "./utm.js";
+import { loadUtmify } from "./utmify-pixel.js";
 
 const logoHtml = (light = false) => {
   const src = light ? config.images.logoLight || config.images.logo : config.images.logo;
@@ -131,5 +133,7 @@ const stepEl = $("[data-progress]");
 if (stepEl) stepEl.innerHTML = progressBar(Number(stepEl.dataset.progress));
 
 bindConfigText(config);
+captureUtms();
+loadUtmify();
 if (getConsent() === "yes") loadTracking();
 cookieBanner();
